@@ -244,8 +244,29 @@ extern "C" bool RC_CallConv ReadRemoteMemory(RC_Pointer handle, RC_Pointer addre
 
 extern "C" bool RC_CallConv WriteRemoteMemory(RC_Pointer handle, RC_Pointer address, RC_Pointer buffer, int offset, int size)
 {
-	// Mem Writing Not Supported!
-	return false;
+    if (!_vmm) return false;
+    if (size <= 0) return false;
+
+    PBYTE src = reinterpret_cast<PBYTE>(reinterpret_cast<uintptr_t>(buffer) + static_cast<size_t>(offset));
+    ULONG64 dest = static_cast<ULONG64>(reinterpret_cast<uintptr_t>(address));
+    DWORD pid = static_cast<DWORD>(reinterpret_cast<uintptr_t>(handle));
+
+    const SIZE_T kMaxChunk = 0x10000;
+    SIZE_T remaining = static_cast<SIZE_T>(size);
+    SIZE_T writtenTotal = 0;
+
+    while (remaining > 0) {
+        ULONG writeSize = static_cast<ULONG>(remaining > kMaxChunk ? kMaxChunk : remaining);
+
+        if (!VMMDLL_MemWrite(_vmm, pid, dest + writtenTotal, src + writtenTotal, writeSize)) {
+            return false;
+        }
+
+        remaining -= writeSize;
+        writtenTotal += writeSize;
+    }
+
+    return true;
 }
 
 ////////////////////////////////////////
