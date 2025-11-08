@@ -11,3 +11,9 @@ A plugin that integrates with the [MemProcFS (PCILeech)](https://github.com/ufri
 * Copy the other native files into the CWD (Current Working Directory, usually where ReClass.NET is stored).
 * Open Reclass.NET, go to File -> Plugins
 * Switch to the Native Helper tab and change the Functions Provider from Default to VmmPlugin
+
+## How to Write Mem
+
+* Right-click the address and select **Change Type**.  
+* Choose the exact value type you want to apply.  
+* Then double-click the current value, enter the new one, and press **Enter**.
